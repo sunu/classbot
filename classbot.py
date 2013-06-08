@@ -51,12 +51,26 @@ class ClassBot(SingleServerIRCBot):
         c.nick(c.get_nickname() + "_")
 
     def on_privmsg(self, c, e):
-        user = nm_to_n(e.source())
+        asker = nm_to_n(e.source())
         questions = e.arguments()
-        print user, questions
-        self.question_queue.append(user, questions[0])
+        print asker, questions
+        self.question_queue.append((asker, questions[0]))
         success_msg = "Your question is in queue to be asked. Thank you!"
-        c.privmsg(user, success_msg)
+        c.privmsg(asker, success_msg)
+
+    def on_pubmsg(self, c, e):
+        if e.arguments()[0].startswith(NICK):
+            msg = e.arguments()[0]
+            user = e.source().split("!")[0]
+            cmd = msg.split()[1].lower()
+            if cmd == "next" and user in self.operators:
+                if self.question_queue:
+                    asker, question = self.question_queue.pop(0)
+                    m = "{0}, {1} asks: {2}".format(user, asker, question)
+                    c.privmsg(e.target(), m)
+                else:
+                    m = "{0}, The question queue is empty now.".format(user)
+                    c.privmsg(e.target(), m)
 
 
 def main():
