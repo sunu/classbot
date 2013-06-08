@@ -7,6 +7,8 @@ __license__ = "GPL3"
 from ircbot import SingleServerIRCBot
 from irclib import nm_to_n
 
+from datetime import datetime
+
 # IRC Server Configuration
 SERVER = "irc.freenode.net"
 PORT = 6667
@@ -16,8 +18,9 @@ OPERATORS = ["sunu", "SunuTheNinja"]
 NICK = "wfs-classbot"
 NICK_PASS = ""
 
-HELP_MSG = "WFS-India - Women in Free Software and Culture in India - www.wfs-india.org. \
-Some useful commands - 'logs', 'website', 'events'. Usage: {0}: <command>"
+# Time gap in between questions in seconds. Asker can't ask more than 1 question
+# within this timegap.
+TIME_GAP = 30
 
 
 class ClassBot(SingleServerIRCBot):
@@ -34,8 +37,9 @@ class ClassBot(SingleServerIRCBot):
         self.count = 0
         self.nick_pass = nick_pass
         self.question_queue = []
+        self.timestamps = {}
 
-        print "Logbot %s" % __version__
+        print "ClassBot %s" % __version__
         print "Connecting to %s:%i..." % (server, port)
         print "Press Ctrl-C to quit"
 
@@ -45,6 +49,7 @@ class ClassBot(SingleServerIRCBot):
     def on_welcome(self, c, e):
         for chan in self.chans:
             c.join(chan)
+            print "Joined channel {0}".format(chan)
 
     def on_nicknameinuse(self, c, e):
         """Nickname in use"""
@@ -52,11 +57,24 @@ class ClassBot(SingleServerIRCBot):
 
     def on_privmsg(self, c, e):
         asker = nm_to_n(e.source())
-        questions = e.arguments()
-        print asker, questions
-        self.question_queue.append((asker, questions[0]))
-        success_msg = "Your question is in queue to be asked. Thank you!"
-        c.privmsg(asker, success_msg)
+        now = datetime.now()
+        last_time = self.timestamps.get(asker)
+        if last_time:
+            timedelta = now - last_time
+            timegap = timedelta.total_seconds()
+        else:
+            timegap = None
+        if not timegap or timegap > TIME_GAP:
+            questions = e.arguments()
+            print asker, questions
+            self.question_queue.append((asker, questions[0]))
+            self.timestamps[asker] = datetime.now()
+            success_msg = "Your question is in queue to be asked. Thank you!"
+            c.privmsg(asker, success_msg)
+        else:
+            error_msg = "You can ask only one question every 30 seconds. Please be patient and wait a \
+while before asking another question. Thank you."
+            c.privmsg(asker, error_msg)
 
     def on_pubmsg(self, c, e):
         if e.arguments()[0].startswith(NICK):
