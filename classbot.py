@@ -5,6 +5,7 @@ __copyright__ = "Copyright (c) Tarashish Mishra"
 __license__ = "GPL3"
 
 from ircbot import SingleServerIRCBot
+from irclib import nm_to_n
 
 # IRC Server Configuration
 SERVER = "irc.freenode.net"
@@ -32,6 +33,7 @@ class ClassBot(SingleServerIRCBot):
         self.operators = operators
         self.count = 0
         self.nick_pass = nick_pass
+        self.question_queue = []
 
         print "Logbot %s" % __version__
         print "Connecting to %s:%i..." % (server, port)
@@ -47,6 +49,14 @@ class ClassBot(SingleServerIRCBot):
     def on_nicknameinuse(self, c, e):
         """Nickname in use"""
         c.nick(c.get_nickname() + "_")
+
+    def on_privmsg(self, c, e):
+        user = nm_to_n(e.source())
+        questions = e.arguments()
+        print user, questions
+        self.question_queue.append(user, questions[0])
+        success_msg = "Your question is in queue to be asked. Thank you!"
+        c.privmsg(user, success_msg)
 
 
 def main():
