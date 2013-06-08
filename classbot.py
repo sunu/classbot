@@ -104,7 +104,7 @@ class ClassBot(SingleServerIRCBot):
             if cmd == "next" and user in self.operators:
                 if self.question_queue:
                     asker, question = self.question_queue.pop(0)
-                    m = "{1} asks: {2}".format(asker, question)
+                    m = "{0} asks: {1}".format(asker, question)
                     c.privmsg(e.target(), m)
                 else:
                     m = "{0}, The question queue is empty now.".format(user)
