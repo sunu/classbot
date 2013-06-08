@@ -44,6 +44,10 @@ class ClassBot(SingleServerIRCBot):
         for chan in self.chans:
             c.join(chan)
 
+    def on_nicknameinuse(self, c, e):
+        """Nickname in use"""
+        c.nick(c.get_nickname() + "_")
+
 
 def main():
     bot = ClassBot(SERVER, PORT, SERVER_PASS, CHANNELS, NICK, NICK_PASS, OPERATORS)
