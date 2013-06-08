@@ -34,8 +34,8 @@ from datetime import datetime
 SERVER = "irc.freenode.net"
 PORT = 6667
 SERVER_PASS = None
-CHANNELS = ["#sunu"]
-OPERATORS = ["sunu", "SunuTheNinja"]
+CHANNELS = ["#sunu", "#wfs-india"]
+OPERATORS = ["sunu", "SunuTheNinja", "kaustavdm", "satabdi", "amani_glugcal"]
 NICK = "wfs-classbot"
 NICK_PASS = ""
 
@@ -93,8 +93,7 @@ class ClassBot(SingleServerIRCBot):
             success_msg = "Your question is in queue to be asked. Thank you!"
             c.privmsg(asker, success_msg)
         else:
-            error_msg = "You can ask only one question every 30 seconds. Please be patient and wait a \
-while before asking another question. Thank you."
+            error_msg = "You can ask only one question every 30 seconds. If your question needs immediate answer, please ask it in the #wfs-india-questions channel."
             c.privmsg(asker, error_msg)
 
     def on_pubmsg(self, c, e):
