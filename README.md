@@ -2,6 +2,11 @@ ClassBot v1.0
 =============
 Written by [Tarashish Mishra](http://tarashish.com) <sunu0000@gmail.com>
 
+What is ClassBot?
+-----------------
+
+ClassBot is a simple IRCBot that helps you in managing Q&A sessions on IRC.
+
 How to run ClassBot?
 --------------------
 ClassBot runs on python 2, not python 3. You can run ClassBot by
