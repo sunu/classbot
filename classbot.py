@@ -90,7 +90,7 @@ class ClassBot(SingleServerIRCBot):
             print asker, questions
             self.question_queue.append((asker, questions[0]))
             self.timestamps[asker] = datetime.now()
-            success_msg = "Your question is in queue to be asked. Thank you!"
+            success_msg = "Your question is in queue to be asked. You can also ask your question in the #wfs-india-questions channel. Thank you!"
             c.privmsg(asker, success_msg)
         else:
             error_msg = "You can ask only one question every 30 seconds. If your question needs immediate answer, please ask it in the #wfs-india-questions channel."
@@ -104,7 +104,7 @@ class ClassBot(SingleServerIRCBot):
             if cmd == "next" and user in self.operators:
                 if self.question_queue:
                     asker, question = self.question_queue.pop(0)
-                    m = "{0}, {1} asks: {2}".format(user, asker, question)
+                    m = "{0} asks: \"{1}\"".format(asker, question)
                     c.privmsg(e.target(), m)
                 else:
                     m = "{0}, The question queue is empty now.".format(user)
